@@ -1,0 +1,88 @@
+DROP DATABASE IF EXISTS biblioteca_TMHM_db;
+CREATE DATABASE biblioteca_TMHM_db
+	CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+USE biblioteca_TMHM_db
+
+-- Tabla Usuarios
+CREATE TABLE usuarios (
+id_usuario INT auto_increment PRIMARY KEY,
+nombres VARCHAR(100) NOT NULL,
+apellidos VARCHAR(100) NOT NULL,
+documento VARCHAR(20) NOT NULL UNIQUE,
+telefono VARCHAR(20),
+correo VARCHAR(150) UNIQUE,
+direccion VARCHAR(200),
+fecha_registro DATE NOT NULL DEFAULT current_timestamp
+);
+-- Tabla autores
+CREATE TABLE autores (
+id_autor INT auto_increment PRIMARY KEY,
+nombre VARCHAR(100) NOT NULL,
+nacionalidad VARCHAR(100)
+);
+-- Tabla editoriales
+CREATE TABLE editoriales (
+id_editorial INT auto_increment PRIMARY KEY,
+nombre VARCHAR(150) NOT NULL,
+ciudad VARCHAR(100)
+);
+-- Tabla categorias
+CREATE TABLE categorias (
+id_categoria INT auto_increment PRIMARY KEY,
+nombre VARCHAR(100) NOT NULL UNIQUE
+);
+-- Tabla libros
+CREATE TABLE libros (
+id_libro INT auto_increment PRIMARY KEY,
+titulo VARCHAR(200) NOT NULL,
+isbn VARCHAR(20) UNIQUE,
+anio_publicacion YEAR,
+id_autor INT NOT NULL,
+id_editorial INT NOT NULL,
+id_categoria INT NOT NULL,
+CONSTRAINT fk_libro_autor
+	foreign key (id_autor) references autores(id_autor),
+CONSTRAINT fk_libro_editorial
+	foreign key (id_editorial) references editoriales(id_editorial),
+CONSTRAINT fk_libro_categoria
+	foreign key (id_categoria) references categorias(id_categoria)
+);
+-- Tabla prestamos
+CREATE TABLE prestamos (
+id_prestamo INT auto_increment PRIMARY KEY,
+id_usuario INT NOT NULL,
+fecha_prestamo DATE NOT NULL DEFAULT current_timestamp,
+fecha_devolucion DATE NULL,
+estado ENUM(
+	'PRESTADO',
+    'DEVUELTO',
+    'ATRASADO'
+) NOT NULL DEFAULT 'PRESTADO',
+constraint fk_prestamo_usuario
+	foreign key (id_usuario)
+		references usuarios(id_usuario)
+);
+-- Tabla detalle_prestamo
+create table detalle_prestamo (
+id_detalle int auto_increment primary key,
+id_prestamo int not null,
+id_libro int not null,
+cantidad int not null default 1,
+constraint fk_detalle_prestamo
+	foreign key (id_prestamo)
+		references prestamos(id_prestamo)
+		on delete cascade,
+constraint fk_detalle_libro
+	foreign key (id_libro)
+		references libros(id_libro)
+);
+-- Tabla auditoria
+create table auditoria (
+id_auditoria int auto_increment primary key,
+tabla_afectada varchar(100),
+operacion varchar(20),
+id_registro int,
+fecha datetime default current_timestamp,
+descripcion varchar(255)
+)
