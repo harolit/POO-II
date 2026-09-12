@@ -1,0 +1,134 @@
+-- 100 usuarios
+DELIMITER $$
+CREATE PROCEDURE generar_usuarios()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    WHILE i <= 100 DO
+        INSERT INTO usuarios 
+        (nombres, apellidos, documento, telefono, correo, direccion)
+        VALUES (CONCAT('Usuario', i),
+            CONCAT('Apellido', i),
+            CONCAT('100000', i),
+            CONCAT('300000', i),
+            CONCAT('usuario', i, '@correo.com'),
+            CONCAT('Dirección', i));
+        SET i = i + 1;
+    END WHILE;
+END $$
+DELIMITER ;
+-- Call the procedure to generate 100 users
+CALL generar_usuarios();
+
+-- 100 autores
+DELIMITER $$
+CREATE PROCEDURE generar_autores()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    WHILE i <= 100 DO
+    INSERT INTO autores(nombre, nacionalidad)
+    VALUES (CONCAT('Autor ', i), CASE
+    WHEN MOD(i, 4) <= 0 THEN 'Colombiana'
+    WHEN MOD(i, 4) <= 1 THEN 'Española'
+    WHEN MOD(i, 4) <= 2 THEN 'Mexicana'
+    ELSE 'Argentina'
+    END);
+    SET i = i + 1;
+    END WHILE;
+END $$
+DELIMITER ;
+CALL generar_autores();
+
+-- 50 editoriales
+DELIMITER $$
+CREATE PROCEDURE generar_editoriales()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    WHILE i <= 50 DO
+    INSERT INTO editoriales(nombre, ciudad)
+    VALUES (CONCAT('Editorial ', i), CASE
+    WHEN MOD(i, 4) = 0 THEN 'Barranquilla'
+    WHEN MOD(i, 4) = 1 THEN 'Bogota'
+    WHEN MOD(i, 4) = 2 THEN 'Medellín'
+    ELSE 'Cartagena'
+    END);
+    SET i = i + 1;
+    END WHILE;
+END $$
+DELIMITER ;
+CALL generar_editoriales();
+
+-- 50 categorias
+DELIMITER $$ 
+CREATE PROCEDURE generar_categorias() 
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    WHILE i <= 50 DO
+    INSERT INTO categorias(nombre)
+    VALUES (CONCAT('Categoria ', i));
+    SET i = i + 1;
+    END WHILE;
+END $$
+DELIMITER ;
+CALL generar_categorias();
+
+-- 500 Libros
+DELIMITER $$ 
+CREATE PROCEDURE generar_libros()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    WHILE i <= 500 DO
+    INSERT INTO libros(titulo, isbn, anio_publicacion,
+    id_autor, id_editorial, id_categoria)
+    VALUES (CONCAT('Libro ', i),
+    CONCAT('ISBN000', LPAD(i, 4, '0')),
+    2000 - MOD(i, 26),
+    1 + MOD(i-1, 100),
+    1 + MOD(i-1, 50),
+    1 + MOD(i-1, 50));
+    SET i = i + 1;
+    END WHILE;
+END $$
+DELIMITER ;
+CALL generar_libros();
+
+-- 500 prestamos
+DELIMITER $$
+CREATE PROCEDURE generar_prestamos()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    WHILE i <= 500 DO
+    INSERT INTO prestamos(id_usuario, fecha_prestamo,
+    fecha_devolucion, estado)
+    VALUES (
+    1 + MOD(i, 100),
+    DATE_SUB(CURRENT_DATE, INTERVAL MOD(i, 365) DAY),
+    CASE WHEN MOD(i, 2) = 0 THEN
+    DATE_SUB(CURRENT_DATE, INTERVAL MOD(i, 300) DAY)
+    ELSE NULL END,
+    CASE
+    WHEN MOD(i, 3) = 0 THEN 'DEVUELTO'
+    WHEN MOD(i, 5) = 0 THEN 'ATRASADO'
+    ELSE 'PRESTADO' 
+    END
+    );
+    SET i = i + 1;
+    END WHILE;
+END $$
+DELIMITER ;
+CALL generar_prestamos();
+
+-- Detalles de los préstamos (300)
+DELIMITER $$
+CREATE PROCEDURE generar_detalles()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    WHILE i <= 300 DO
+    INSERT INTO detalle_prestamo
+    (id_prestamo, id_libro, cantidad)
+    VALUES 
+    (1 + MOD(i-1, 300), 1 + MOD(i-1, 500), 1);
+    SET i = i + 1;
+    END WHILE;
+END $$
+DELIMITER ;
+CALL generar_detalles();
