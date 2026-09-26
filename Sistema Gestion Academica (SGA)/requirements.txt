@@ -1,0 +1,12 @@
+# Dependencias del Sistema de Gestión Académica (SGA)
+# Python 3.10+
+
+# Tkinter viene incluido en Python estándar
+# SQLite3 viene incluido en Python estándar
+
+# Para generación de PDF (opcional en esta versión)
+reportlab==4.0.7
+
+# Para generación de códigos QR (opcional)
+qrcode==7.4.2
+Pillow==10.1.0
